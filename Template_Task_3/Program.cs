@@ -4,6 +4,17 @@ using Template_Task_3.StackAndHeap;
 
 namespace Template_Task_3;
 
+//Svar till frågor
+//1: Stack är en datastruktur som håller koll på vilken ordning olika metoder anropas i. Man kan likna det ungefär med ett pringlesrör där du alltid måste ta det översta chipset för att komma åt nästa, och om du lägger ner ett chips igen måste du ta bort det för att komma åt det under. Vanligt användningsområde är undo/redo-funktion där den senaste ändringen (överst i stacken) plockas bort.
+//1: Heap används för att lagra objekt som ska finnas kvar en längre tid än en metod körs och där man ska kunna komma åt specifik data utan att följa stackprincipen där man alltid måste ta det senast tillagda. Minnet i heapen hanteras inte automatiskt som stacken, utan det är programmerarens ansvar att avallokera minnet.
+
+//2: Value types är värden som lagras direkt i variabeln. Dessa kan lagras både på stacken och heapen beroende på vart dom är deklarerade. Ex. int och bool.
+//2: Reference types lagras alltid på heapen och variabeln vi använder är en referens till vart på heapen vi hittar datan. Ex. class och string.
+
+//3: Den första metoden är en value type och den andra är en reference type. Det innebär att när vi ändrar värdet av y så ändras inte värdet av x eftersom y bara kopierat värdet av x.
+//3: I den andra metoden så kopieras referensen, inte värdet. Det betyder att båda variablerna refererar till samma objekt på heapen. Så vare sig vi säger åt x.MyValue eller y.MyValue att ändra sig så ändras egentligen bara det objekt som både x och y refererar till.
+
+
 internal class Program
 {
     // Dictionary: snabb uppslagning av produkter via produktkod (key = kod, value = produkt)
@@ -156,10 +167,19 @@ internal class Program
         // Exempel på hur du lägger till en produkt i dictionaryn:
         // products["KAFFE"] = new Product("KAFFE", "Kaffe", 15.00m, 50);
         //
-        // TODO:
         // Lägg till minst 10 produkter i products-dictionaryn.
         // Välj egna koder, namn, priser och lagersaldon.
 
+        products["ART-001"] = new Product("ART-001", "Wireless Mouse", 749.00m, 150);
+        products["ART-002"] = new Product("ART-002", "Mechanical Keyboard", 1899.00m, 75);
+        products["ART-003"] = new Product("ART-003", "USB-C Hub", 399.00m, 200);
+        products["ART-004"] = new Product("ART-004", "Noise Cancelling Headphones", 1999.00m, 40);
+        products["ART-005"] = new Product("ART-005", "27-inch Monitor", 2799.00m, 25);
+        products["ART-006"] = new Product("ART-006", "Laptop Stand", 349.00m, 120);
+        products["ART-007"] = new Product("ART-007", "External SSD 1TB", 1499.00m, 60);
+        products["ART-008"] = new Product("ART-008", "Webcam HD", 549.00m, 95);
+        products["ART-009"] = new Product("ART-009", "Bluetooth Speaker", 799.00m, 110);
+        products["ART-010"] = new Product("ART-010", "Smart Desk Lamp", 259.00m, 85);
 
     }
 
@@ -174,25 +194,41 @@ internal class Program
         // Lagervärde för en produkt:
         // product.Price * product.Stock
 
+        decimal totalValue = 0.0m;
+        foreach (KeyValuePair<string, Product> product in products)
+        {
+            Console.WriteLine(product.Value);
+            totalValue += product.Value.Price * product.Value.Stock;
+        }
 
         // Fråga:
         // Varför passar Dictionary bra för ett produktregister?
-        Console.WriteLine("Svar: TODO - skriv ditt svar här");
+        Console.WriteLine("Dictionary passar bra för ett produktregister pga att man enkelt kan använda en produktkod (sträng) för att komma åt en produkt. Denna produkten kan innehålla de variabler man behöver för sin produkt, så som lagersaldo, pris osv.");
     }
 
     static void FindProduct()
     {
         Console.Write("Ange produktkod: ");
-        
 
-        // TODO:
+
         // Hämta produktens code
         // Gör koden till stora bokstäver med .ToUpper()
         // Slå upp produkten med TryGetValue
         // Om produkten finns, skriv ut den.
         // Om produkten saknas, skriv ett felmeddelande.
-
-        Console.WriteLine("TODO: Implementera FindProduct.");
+        var input = Console.ReadLine() ?? "";
+        bool isValidString = !string.IsNullOrWhiteSpace(input);
+        if(isValidString)
+        {
+            if(products.TryGetValue(input.ToUpper(), out Product? product))
+            {
+                Console.WriteLine(product);
+            }
+            else
+            {
+                Console.WriteLine("Produkten kunde inte hittas.");
+            }
+        }
 
         // Fråga:
         // Varför är TryGetValue bättre än att skriva products[code] direkt?
