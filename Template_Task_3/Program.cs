@@ -187,7 +187,6 @@ internal class Program
     {
         Console.WriteLine("=== Produkter ===");
 
-        // TODO:
         // Loopa igenom dictionaryn products.
         // Skriv ut varje produkt.
         // Räkna även ut totalt lagervärde.
@@ -208,38 +207,29 @@ internal class Program
 
     static void FindProduct()
     {
-        Console.Write("Ange produktkod: ");
-
-
         // Hämta produktens code
         // Gör koden till stora bokstäver med .ToUpper()
         // Slå upp produkten med TryGetValue
         // Om produkten finns, skriv ut den.
         // Om produkten saknas, skriv ett felmeddelande.
-        var input = Console.ReadLine() ?? "";
-        bool isValidString = !string.IsNullOrWhiteSpace(input);
-        if(isValidString)
+        string input = InputHelpers.ReadString("Ange produktkod: ");
+        if (products.TryGetValue(input.ToUpper(), out Product? product))
         {
-            if(products.TryGetValue(input.ToUpper(), out Product? product))
-            {
-                Console.WriteLine(product);
-            }
-            else
-            {
-                Console.WriteLine("Produkten kunde inte hittas.");
-            }
+            Console.WriteLine(product);
+        }
+        else
+        {
+            Console.WriteLine("Produkten kunde inte hittas.");
         }
 
         // Fråga:
         // Varför är TryGetValue bättre än att skriva products[code] direkt?
-        Console.WriteLine("Svar: TODO - skriv ditt svar här");
+        Console.WriteLine("Genom att använda TryGetValue kan man enkelt hantera det scenario där användaren söker på en produktkod som inte finns och använda det för att skriva ut ett felmeddelande");
     }
 
     static void AddProduct()
     {
-        Console.WriteLine("TODO: Implementera AddProduct.");
-      
-        // TODO:
+
         // Läs in produktkod.
         // Gör produktkoden till stora bokstäver med .ToUpper().
         // Kontrollera om koden redan finns i products — skriv felmeddelande om den gör det.
@@ -250,15 +240,30 @@ internal class Program
         // Lägg till produkten i products-dictionaryn.
         // Lägg till ett loggmeddelande i logMessages.
 
+        string input = InputHelpers.ReadString("Ange produktkod: ");
+        if (products.ContainsKey(input.ToUpper()))
+        {
+            Console.WriteLine($"Produkten med koden {input.ToUpper()} finns redan i registret");
+        }
+        else
+        {
+            string nameInput = InputHelpers.ReadString("Ange namn: ");
+            decimal priceInput = InputHelpers.ReadDecimal("Ange pris: ");
+            int stockInput = InputHelpers.ReadInt("Ange lagersaldo: ");
+            products[input.ToUpper()] = new Product(input.ToUpper(), nameInput, priceInput, stockInput);
+            logMessages.Add($"Produkt {input.ToUpper()} - {nameInput} lades till i registret.");
+
+        }
+
+
         // Fråga:
         // Vad är nyckeln och vad är värdet i products?
-        Console.WriteLine("Svar: TODO - skriv ditt svar här");
+        Console.WriteLine("Nyckeln är strängen 'key' i products[string key] och värdet är objektet av klassen Product");
     }
 
     static void ChangeStock()
     {
-        Console.WriteLine("TODO: Implementera ChangeStock.");
-        // TODO:
+
         // Läs in produktkod.
         // Slå upp produkten med TryGetValue.
         // Läs in nytt lagersaldo från användaren.
@@ -266,6 +271,25 @@ internal class Program
         // Ändra produktens Stock. Validera även i product
         // 
         // Logga ändringen.
+
+        string input = InputHelpers.ReadString("Ange produktkod: ");
+        if (products.TryGetValue(input.ToUpper(), out Product? product))
+        {
+            int newStockInput = InputHelpers.ReadInt("Ange nytt lagersaldo: ");
+            if (newStockInput >= 0 || newStockInput == product.Stock)
+            {
+                product.Stock = newStockInput;
+                logMessages.Add($"Lagersaldo för produkt {product.Code} - {product.Name} ändrades till {newStockInput}.");
+            }
+            else
+            {
+                Console.WriteLine("Lagersaldo kunde inte ändras");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Produkten kunde inte hittas.");
+        }
 
     }
 
@@ -295,7 +319,7 @@ internal class Program
 
     static decimal GetPriceBetter(string code)
     {
-        // TODO:
+
         // Skriv om GetPriceBad med en lokal Dictionary istället för if/else.
         // Samma fyra produkter och priser som i GetPriceBad ska finnas.
         // Använd TryGetValue för att slå upp priset.
@@ -304,11 +328,26 @@ internal class Program
         // Jämför sedan de två metoderna — vad händer om du behöver lägga till
         // en femte produkt? Vilken metod är enklare att utöka?
 
+        Dictionary<string, decimal> priceList = new Dictionary<string, decimal>()
+        {
+            {"KAF", 15},
+            {"TE", 12},
+            {"BUL", 18},
+            {"MCK", 35}
+        };
+
+        decimal returnPrice = -1.00m;
+
+        if (priceList.TryGetValue(code, out decimal priceBad))
+        {
+            returnPrice = priceBad;
+        }
+
         // Fråga:
         // Varför är Dictionary-lösningen bättre än många if/else-satser?
-        Console.WriteLine("Svar: TODO - skriv ditt svar här");
+        Console.WriteLine("Istället för att skapa många rader kod av bara if else-satser när vi vill lägga till produkter, så räcker det med att lägga till en rad kod i våran dictionary för att lägga till en ny produkt");
 
-        return -1;
+        return returnPrice;
     }
 
     #endregion
@@ -320,42 +359,52 @@ internal class Program
     // ============================================================
 
     static void AddCustomerToQueue()
-    {
-        Console.WriteLine("TODO: Implementera AddCustomerToQueue.");
-        
-        // TODO:
+    {   
         // Läs in kundens namn (använd InputHelpers.ReadString).
         // Skapa ett Customer-objekt med namnet.
         // Lägg kunden i customerQueue med Enqueue.
         // Skriv ut att kunden lagts till och vilken plats i kön de har.
         // Lägg till ett loggmeddelande i logMessages.
 
+        string nameInput = InputHelpers.ReadString("Ange kundens namn: ");
+        Customer newCustomer = new Customer(nameInput);
+        customerQueue.Enqueue(newCustomer);
+        Console.WriteLine($"{newCustomer.Name} har blivit tillagd i kön");
+        logMessages.Add($"Kunden {newCustomer.Name} lades till i kön {newCustomer.AddedAt}.");
+
         // Fråga:
         // Vad betyder FIFO?
-        Console.WriteLine("Svar: TODO - skriv ditt svar här");
+        Console.WriteLine("FIFO betyder First in, First out. Det innebär att det som blir tillagt först i kön, är också det som kommer lämna först till skillnad från tidigare förklarade stacken som följer LIFO (Last in, First out)");
     }
 
     static void ServeNextCustomer()
     {
-        Console.WriteLine("TODO: Implementera ServeNextCustomer.");
-        
-        // TODO:
         // Kontrollera om customerQueue är tom — skriv meddelande om den är det.
         // Om den inte är tom:
         // Använd Dequeue för att ta bort och hämta den första kunden.
         // Skriv ut vilken kund som blev betjänad.
         // Lägg till ett loggmeddelande i logMessages.
 
+        if(customerQueue.Count <= 0)
+        {
+            Console.WriteLine("Kunden kunde inte betjänas eftersom kön är tom.");
+        }
+        else
+        {
+            Customer servedCustomer = customerQueue.Dequeue();
+            Console.WriteLine($"{servedCustomer} har blivit betjänad");
+            logMessages.Add($"Kunden {servedCustomer.Name} betjänades.");
+        }
+
         // Fråga:
         // Varför passar Queue bättre än Stack för en kundkö?
-        Console.WriteLine("Svar: TODO - skriv ditt svar här");
+        Console.WriteLine("Queue använder FIFO medans Stack använder LIFO. Om vi hade använt Stack i detta fall hade alltid den som placerats sist i kön blivit betjänad först, vilket vi inte vill.");
     }
 
     static void PrintCustomerQueue()
     {
         Console.WriteLine("=== Kundkö ===");
 
-        // TODO:
         // Om customerQueue är tom, skriv att kön är tom.
         // Annars: loopa igenom customerQueue med en räknare.
         // Skriv ut platsnummer, namn och tidsstämpel för varje kund.
@@ -367,7 +416,19 @@ internal class Program
         //
         // Tips: foreach fungerar på Queue utan att ta bort elementen.
 
-        Console.WriteLine("TODO: Implementera PrintCustomerQueue.");
+        if(customerQueue.Count <= 0)
+        {
+            Console.WriteLine("Kön är tom.");
+        }
+        else
+        {
+            int tempCount = 1;
+            foreach ( Customer customer in customerQueue)
+            {
+                Console.WriteLine($"{tempCount}. {customer}");
+                tempCount++;
+            }
+        }
     }
 
     #endregion
@@ -380,7 +441,6 @@ internal class Program
 
     static void SellProduct()
     {
-        // TODO:
         // Kontrollera om customerQueue är tom — skriv meddelande om den är det.
         // Använd Peek för att se vilken kund som står först (utan att ta bort dem).
         // Läs in produktkod.
@@ -395,18 +455,45 @@ internal class Program
         // Bestäm om kunden ska tas bort från kön efter köp eller inte.
         // Motivera ditt val i kommentar.
 
-        Console.WriteLine("TODO: Implementera SellProduct.");
+        if ((customerQueue.Count <= 0))
+        {
+            Console.WriteLine("Försäljning kunde inte genomföras eftersom kön är tom.");
+        }
+        else
+        {
+            if(customerQueue.TryPeek(out Customer? firstCustomer))
+            {
+                string input = InputHelpers.ReadString($"Ange produktkod: ");
+                if(products.TryGetValue(input.ToUpper(), out Product? product))
+                {
+                    if(product.Stock > 0)
+                    {
+                        product.Stock -= 1;
+                        Sale newSale = new Sale(product.Code, product.Name, product.Price, firstCustomer.Name);
+                        saleHistory.Push(newSale);
+                        logMessages.Add($"Produkten {product.Code} - {product.Name} såldes till kunden {firstCustomer.Name} för {product.Price} kr.");
+                        //Jag har valt att behålla kunden i kön eftersom att den ska få möjligheten att handla fler produkter. Med nuvarande implementering kan bara en produkt köpas i taget. Optimalt vore att köra en loop där det finns ett val att köpa en till produkt eller "checka ut".
+                    }
+                    else
+                    {
+                        Console.WriteLine("Produkten finns inte i lager.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Produkten kunde inte hittas.");
+                }
+            }
+        }
 
         // Fråga:
         // Varför sparar vi försäljningar i en Stack?
-        Console.WriteLine("Svar: TODO - skriv ditt svar här");
+        Console.WriteLine("Med tanke på att en Stack körs enligt LIFO kan vi enkelt ångra senaste köpet om det blev fel utan att påverka resten av Stacken");
     }
 
     static void UndoLastSale()
     {
-        Console.WriteLine("TODO: Implementera UndoLastSale.");
 
-        // TODO:
         // Kontrollera om saleHistory är tom — skriv meddelande om den är det.
         // Om den inte är tom:
         // Använd Pop för att hämta och ta bort senaste försäljningen.
@@ -414,9 +501,26 @@ internal class Program
         // Öka produktens Stock med 1.
         // Logga vad som ångrades i logMessages.
 
+        if(saleHistory.Count <= 0)
+        {
+            Console.WriteLine("Köphistoriken är tom.");
+        }
+        else
+        {
+            Sale lastSale = saleHistory.Pop();
+            if(lastSale != null)
+            {
+                if(products.TryGetValue(lastSale.ProductCode, out Product? product))
+                {
+                    product.Stock += 1;
+                    logMessages.Add($"Försäljningen av produkten {product.Code} - {product.Name} till kunden {lastSale.CustomerName} har ångrats.");
+                }
+            }
+        }
+
         // Fråga:
         // Vad betyder LIFO?
-        Console.WriteLine("Svar: TODO - skriv ditt svar här");
+        Console.WriteLine("LIFO betyder Last in, First out. Det innebär att det senaste objektet som blev tillagt är det senaste som måste tas bort");
     }
 
     static void ReverseTextLab()
@@ -424,9 +528,26 @@ internal class Program
         Console.WriteLine("=== Stack-labb: vänd text ===");
         Console.WriteLine("TODO: Implementera ReverseTextLab.");
 
-        // TODO:
         // Läs in en text från användaren.
         // Skriv ut texten bakofram använd en lämplig collektion.
+
+        Stack<char> charStack = new Stack<char>();
+
+        string input = InputHelpers.ReadString("Skriv en text: ");
+
+        foreach (char c in input)
+        {
+            charStack.Push(c);
+        }
+
+        string output = "";
+
+        while(charStack.Count > 0)
+        {
+            output += charStack.Pop();
+        }
+
+        Console.WriteLine(output);
     }
 
     #endregion
