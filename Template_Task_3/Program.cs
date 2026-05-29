@@ -33,7 +33,6 @@ internal class Program
 
     static void Main(string[] args)
     {
-        //ToDo implementera 
         SeedProducts();
 
         bool running = true;
@@ -562,15 +561,23 @@ internal class Program
     {
         Console.WriteLine("=== Logg ===");
 
-        // TODO:
         // Om logMessages är tom, skriv "Inga loggmeddelanden finns."
         // Annars: loopa igenom logMessages och skriv ut varje meddelande.
-
-        Console.WriteLine("TODO: Implementera PrintLog.");
+        if (logMessages.Count <= 0)
+        {
+            Console.WriteLine("Inga logmeddelanden finns.");
+        }
+        else
+        {
+            foreach (string log in logMessages)
+            {
+                Console.WriteLine(log);
+            }
+        }
 
         // Fråga:
         // Varför passar List bra för loggmeddelanden?
-        Console.WriteLine("Svar: TODO - skriv ditt svar här");
+        Console.WriteLine("Genom att använda en List kan vi ta bort och lägga till element när vi behöver. Funkar väldigt bra för logmeddelanden då vi inte vet hur många vi kommer ha.");
     }
 
     static void ListLab()
@@ -599,25 +606,31 @@ internal class Program
         shoppingList.Remove("Smör");
         PrintListInfo(shoppingList, "Efter Remove");
 
-        // TODO:
         // Lägg till minst 4 egna varor med en loop.
         // Skriv ut hela listan.
+        string[] wares = { "Ägg", "Kaffe", "Leverpastej", "Kaviar" };
+
+        for (int i = 0; i < wares.Length; i++)
+        {
+            shoppingList.Add(wares[i]);
+        }
+        PrintListInfo(shoppingList, $"Efter {wares[wares.Length - 1]}");
 
         // Fråga 1:
         // Vad betyder Count?
-        Console.WriteLine("Svar 1: TODO - skriv ditt svar här");
+        Console.WriteLine("Svar 1: Count betyder hur många element som finns i listan");
 
         // Fråga 2:
         // Vad betyder Capacity?
-        Console.WriteLine("Svar 2: TODO - skriv ditt svar här");
+        Console.WriteLine("Svar 2: Capacity är antalet element en lista kan ha utan att behöva ändra storlek");
 
         // Fråga 3:
         // Varför ökar inte Capacity med exakt 1 varje gång?
-        Console.WriteLine("Svar 3: TODO - skriv ditt svar här");
+        Console.WriteLine("Svar 3: Det hela är för att få bättre prestanda. Om Capacity hade ökats med 1 varje gång hade den behövt kopiera över allt till en ny array och allokera nytt minne. Istället så ökar den bara när du lagt till tillräckligt med element för att nå capacity. ");
 
         // Fråga 4:
         // Minskar Capacity automatiskt när element tas bort?
-        Console.WriteLine("Svar 4: TODO - skriv ditt svar här");
+        Console.WriteLine("Svar 4: Nej! Detta är också en fråga om prestanda. Om Capacity hade minskat hade den behövt allokera en ny array och kopiera resterande element varje gång, vilket tar på vår prestanda.");
     }
 
     static void PrintListInfo(List<string> list, string message)
@@ -639,26 +652,30 @@ internal class Program
 
         string[] weekdays = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"];
 
-        // TODO:
         // Skriv ut alla veckodagar med en for-loop.
         // Tips: använd weekdays.Length för att veta hur många element det finns.
+        for (int i = 0; i < weekdays.Length; i++)
+        {
+            Console.WriteLine(weekdays[i]);
+        }
 
-        // TODO:
         // Skriv ut alla veckodagar med foreach.
-
-        Console.WriteLine("TODO: Implementera utskrifter i ArrayLab.");
+        foreach (string weekday in weekdays)
+        {
+            Console.WriteLine(weekday);
+        }
 
         // Fråga 1:
         // När passar en array bättre än en List?
-        Console.WriteLine("Svar 1: TODO - skriv ditt svar här");
+        Console.WriteLine("Svar 1: När du vet exakt hur många element du vill ha så är array ett bättre val");
 
         // Fråga 2:
         // Vad händer om du försöker skriva weekdays[5]?
-        Console.WriteLine("Svar 2: TODO - skriv ditt svar här");
+        Console.WriteLine("Svar 2: Det blir ett error. Du kan inte hämta ett element som inte finns inom arrayens kapacitet.");
 
         // Fråga 3:
         // Varför måste arrayens storlek anges från början?
-        Console.WriteLine("Svar 3: TODO - skriv ditt svar här");
+        Console.WriteLine("Svar 3: När en array skapas så allokeras minne till den och den måste veta exakt hur mycket minne den ska ta upp. Om vi vill öka storleken på en array måste vi skapa en ny array med större storlek sen kopiera över den gamla till den nya.");
     }
 
     #endregion
@@ -676,7 +693,6 @@ internal class Program
         Console.WriteLine("Skriv en mening:");
         string text = ReadLine;
 
-        //ToDo: Skriv koden för CountWords
         Dictionary<string, int> wordCounts = CountWords(text);
 
         Console.WriteLine("Resultat:");
@@ -688,14 +704,13 @@ internal class Program
 
         // Fråga:
         // Varför passar Dictionary bra när vi ska räkna ord?
-        Console.WriteLine("Svar: TODO - skriv ditt svar här");
+        Console.WriteLine("Svar: Ett dictionary tar emot en nyckel och ett värde. Genom att använda en strängnyckel och ett intvärde kan vi koppla ihop ett ord med en siffra som vi sedan kan ändra på");
     }
 
     static Dictionary<string, int> CountWords(string text)
     {
         Dictionary<string, int> wordCounts = new Dictionary<string, int>();
 
-        // TODO:
         // Dela upp text i ord med string.Split.
         // Separera på: mellanslag (ett eller flera), punkt, !, ?, :, ;
         // Tips: string[] words = text.Split(new char[] { ' ', '.', '!', '?', ':', ';' },
@@ -706,9 +721,23 @@ internal class Program
         // Om ordet redan finns i wordCounts → öka värdet med 1.
         // Annars → lägg till ordet med värdet 1.
 
+        string[] words = text.Split(new char[] {' ', '.', '!', '?', ':', ';'}, StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (string word in words)
+        {
+            if(wordCounts.ContainsKey(word.ToLower()))
+            {
+                wordCounts[word.ToLower()]++;
+            }
+            else
+            {
+                wordCounts.Add(word.ToLower(), 1);
+            }
+        }
+
         // Fråga:
         // Vad är nyckeln och vad är värdet i wordCounts?
-        Console.WriteLine("Svar: TODO - skriv ditt svar här");
+        Console.WriteLine("Svar: Nyckeln är ordet och värdet är antalet gånger ordet upprepas");
 
         return wordCounts;
     }
@@ -733,7 +762,6 @@ internal class Program
         Console.WriteLine("Skriv en kodrad eller parentessträng:");
         string input = ReadLine;
 
-        //ToDo skriv koden för CheckParantheses
         bool isCorrect = CheckParentheses(input);
 
         if (isCorrect)
@@ -750,7 +778,6 @@ internal class Program
 
     static bool CheckParentheses(string text)
     {
-        // TODO:
         // Använd en Stack<char> och en Dictionary<char, char>.
         //
         // Tips Dictionary:
@@ -760,12 +787,42 @@ internal class Program
         // Tips Stack:
         // Stacken håller reda på vilka öppnare du sett men ännu inte stängt.
         // Tänk på vad LIFO innebär här — varför är det precis rätt egenskap för det här problemet?
-        //
+
+        Stack<char> openers = new Stack<char>();
+        Dictionary<char, char> parenthesis = new Dictionary<char, char>();
+        parenthesis.Add(')', '(');
+        parenthesis.Add(']', '[');
+        parenthesis.Add('}', '{');
+
+        foreach (char c in text)
+        {
+            if (parenthesis.ContainsValue(c))
+            {
+                openers.Push(c);
+            }
+            else if (parenthesis.ContainsKey(c))
+            {
+                if (openers.Count == 0)
+                {
+                    return false;
+                }
+
+                if (openers.Peek() == parenthesis[c])
+                {
+                    openers.Pop();
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
         // Fråga:
         // Varför är Dictionary + Stack bättre än bara Stack med if/else för matchningen?
-        Console.WriteLine("Svar: TODO - skriv ditt svar här");
+        Console.WriteLine("Svar: Vi kan enkelt lägga till fler värden i en dictionary utan att koden blir bloated.");
 
-        return false;
+        return openers.Count == 0;
     }
 
     // ============================================================
@@ -819,31 +876,31 @@ internal class Program
 
         // Fråga 1:
         // Varför ändras inte number1 när number2 ändras?
-        Console.WriteLine("Svar 1: TODO - skriv ditt svar här");
+        Console.WriteLine("Svar 1: De är value types, vilket menar att dom har en egen plats på minnet");
 
         // Fråga 2:
         // Varför ändras inte score1.Points när score2.Points ändras?
-        Console.WriteLine("Svar 2: TODO - skriv ditt svar här");
+        Console.WriteLine("Svar 2: score1 och score2 är structs, vilket också är en value type. Samma princip som fråga 1.");
 
         // Fråga 3:
         // Varför ändras product1.Stock när product2.Stock ändras?
-        Console.WriteLine("Svar 3: TODO - skriv ditt svar här");
+        Console.WriteLine("Svar 3: product1 är referens till en klass på heapen. När vi kör product2 = product1 så kopierar vi referensen till minnet, vi kopierar inte objektet. När vi kallar på product2.Stock så går vi till platsen den refererar till i minnet och ändrar. Eftersom product1 refererar till samma plats på minnet så får vi samma värde när vi kallar på product1.Stock");
 
         // Fråga 4:
         // Är Product en value type eller reference type?
-        Console.WriteLine("Svar 4: TODO - skriv ditt svar här");
+        Console.WriteLine("Svar 4: En reference type");
 
         // Fråga 5:
         // Vad ligger på heapen i Product-exemplet?
-        Console.WriteLine("Svar 5: TODO - skriv ditt svar här");
+        Console.WriteLine("Svar 5: Ett Product-objekt som product1 och product2 sedan refererar till.");
 
         // Fråga 6:
         // Vad innebär det att två variabler kan peka på samma objekt?
-        Console.WriteLine("Svar 6: TODO - skriv ditt svar här");
+        Console.WriteLine("Svar 6: Det innebär att båda variablerna pekar på samma plats i minnet.");
 
         // Fråga 7:
         // Vad är skillnaden mellan stacken i minnet och Stack<T> som datastruktur?
-        Console.WriteLine("Svar 7: TODO - skriv ditt svar här");
+        Console.WriteLine("Svar 7: Stacken i minnet är vad som hanterar hela programmet. När en metod körs läggs den och dess lokala variabler på stacken och när den är färdig tas den bort. Detta sker automatiskt. Stack<T> är något vi får kontrollera själva och kan använda för copy/paste-funktionalitet.");
     }
 
     #endregion
